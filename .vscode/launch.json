@@ -1,0 +1,45 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug executable 'cloth_physics_simulation_2d'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--bin=cloth_physics_simulation_2d",
+                    "--package=cloth_physics_simulation_2d"
+                ],
+                "filter": {
+                    "name": "cloth_physics_simulation_2d",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in executable 'cloth_physics_simulation_2d'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bin=cloth_physics_simulation_2d",
+                    "--package=cloth_physics_simulation_2d"
+                ],
+                "filter": {
+                    "name": "cloth_physics_simulation_2d",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}
