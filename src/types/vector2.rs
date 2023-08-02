@@ -28,14 +28,18 @@ impl Add for Vector2 {
 // Subtract Vectors
 impl SubAssign for Vector2 {
     fn sub_assign(&mut self, rhs: Self) {
-        self.add_assign(rhs);
+        self.x = self.x - rhs.x;
+        self.y = self.y - rhs.y;
     }
 }
 
 impl Sub for Vector2 {
     type Output = Self;
     fn sub(self, rhs: Self) -> Self {
-        self.add(rhs)
+        Self {
+            x: self.x - rhs.x,
+            y: self.y - rhs.y
+        }
     }
 }
 

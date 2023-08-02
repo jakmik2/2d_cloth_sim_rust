@@ -1,3 +1,5 @@
+use std::{sync::Arc, collections::{HashMap, hash_map::Keys}};
+
 use crate::types::vector2::Vector2;
 
 // A basic particle containing Position, Velocity and Mass
@@ -69,5 +71,56 @@ impl Particle {
 impl Default for Particle {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[derive(Clone)]
+pub struct ParticleCollection(HashMap<String, Arc<Particle>>);
+
+impl ParticleCollection {
+    pub fn new(particles: HashMap<&str, Particle>) -> Self {
+        let mut hm = HashMap::new();
+        
+        for (key, value) in particles {
+            hm.insert(key.to_string(), Arc::new(value));
+        }
+
+        ParticleCollection(hm)
+    }
+
+    // TODO : Get Mutable reference from particle collection impl `derefmut` trait?
+    // pub fn get_particle_mut(&mut self, key: &str) -> &mut Particle {
+    //     self.0.get_mut(key).unwrap()
+    // }
+
+    pub fn get_particle(&self, key: &str) -> Particle {
+        self.0.get(key).unwrap().as_ref().clone()
+    }
+
+    pub fn set_particle(&mut self, key: &str, particle: Particle) {
+        self.0.insert(key.to_string(), Arc::new(particle));
+    }
+
+    pub fn get_position(&self, key: &str) -> Vector2 {
+        self.0.get(key).unwrap().position
+    }
+
+    pub fn set_position(&mut self, key: &str, new_pos: Vector2) {
+        // Get selected Particle
+        let mut particle: Particle = self.0.get(key).unwrap().as_ref().clone();
+        // Set current position to previous position
+        particle.prev_pos = particle.position;
+        // Set position to new position
+        particle.position = new_pos;
+        self.0.insert(key.to_string(), Arc::new(particle));
+
+    }
+
+    pub fn keys(&self) -> Keys<'_, String, Arc<Particle>> {
+        self.0.keys()
+    }
+
+    pub fn size(&self) -> usize {
+        self.0.len()
     }
 }

@@ -1,18 +1,16 @@
-use crate::types::{vector2::*, particle::*};
-
-#[derive(Debug, PartialEq, Clone, Copy)]
+#[derive(Debug, PartialEq)]
 pub struct Stick {
-    pub p1: Particle,
-    pub p2: Particle,
+    pub p1: String,
+    pub p2: String,
     pub length: f32
 }
 
 impl Stick {
-    pub fn new(p1: Particle, p2: Particle) -> Self {
+    pub fn new(p1: &str, p2: &str, length: f32) -> Self {
         Self {
-            p1,
-            p2,
-            length: p1.position.get_distance_to(p2.position)
+            p1: p1.to_string(),
+            p2: p2.to_string(),
+            length
         }
     }
 }
