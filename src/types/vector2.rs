@@ -111,6 +111,7 @@ impl DivAssign<f32> for Vector2 {
 impl Vector2 {
     // Defualt values
     pub const UNIT_VECTOR: Vector2 = Vector2 {x: 1.0, y: 1.0};
+    pub const ZERO: Vector2 = Vector2 {x: 0., y: 0.};
 
     pub fn get_length(self) -> f32 {
         (self.x * self.x + self.y * self.y).sqrt()

@@ -39,6 +39,8 @@ impl Particle {
         }
     }
 
+    pub fn pin(&self) {}
+
     // Generalized travel op
     pub fn travel_by_op(mut self, delta_time: f32, acceleration: Vector2, op: fn(Particle, f32, Vector2) -> Vector2) {
         self.prev_pos = self.position;
@@ -74,10 +76,14 @@ impl Default for Particle {
     }
 }
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct ParticleCollection(HashMap<String, Arc<Particle>>);
 
 impl ParticleCollection {
+    pub fn new_empty() -> Self {
+        ParticleCollection(HashMap::new())
+    }
+
     pub fn new(particles: HashMap<&str, Particle>) -> Self {
         let mut hm = HashMap::new();
         
