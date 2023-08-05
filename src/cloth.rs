@@ -1,6 +1,6 @@
 use fermium::prelude::*;
 
-use crate::{mouse::Mouse, types::{vector2::Vector2, particle::*, stick::Stick}};
+use crate::{mouse::Mouse, types::{vector2::Vector2, particle::*, stick::Stick}, renderer::Renderer};
 
 #[derive(Debug)]
 pub struct Cloth {
@@ -22,7 +22,7 @@ impl Cloth {
         }
     }
 
-    pub fn init(&mut self, width: u32, height: u32, spacing: u32, start_x: u32, start_y: u32) {   
+    pub fn init(&mut self, width: i32, height: i32, spacing: i32, start_x: i32, start_y: i32) {   
         for y in 0..height {
             for x in 0..width {
                 let point = Particle::at_position(Vector2 {x: (start_x + x * spacing) as f32, y: (start_y + y * spacing) as f32});
@@ -56,12 +56,13 @@ impl Cloth {
         }
     }
         
-
-    pub fn update(&mut self, renderer: *mut SDL_Renderer, mouse: &Mouse, delta_time: u32) {
-        // TODO
+    pub fn update(&mut self, renderer: &Renderer, mouse: &Mouse, delta_time: u32) {
+        for idx in 0..self.points.size() {
+            self.points.get_particle(idx.to_string().as_str()).update()
+        }
     }
 
-    pub fn draw(&mut self, renderer: &SDL_Renderer, mouse: &Mouse, delta_time: u32) {
+    pub fn draw(&mut self, renderer: &Renderer, mouse: &Mouse, delta_time: u32) {
         // TODO
     }
 }

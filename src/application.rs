@@ -2,12 +2,11 @@ use std::ffi::CString;
 
 use fermium::{prelude::*, video::SDL_GetWindowSize};
 
-use crate::{mouse::Mouse, cloth::Cloth};
+use crate::{mouse::Mouse, cloth::Cloth, renderer::Renderer};
 
 #[derive(Debug)]
-struct Application {
-    renderer: *mut SDL_Renderer,
-    window: *mut SDL_Window,
+pub struct Application {
+    renderer: Renderer,
     mouse: Mouse,
     cloth: Cloth,
     is_running: bool,
@@ -15,49 +14,30 @@ struct Application {
 }
 
 impl Application {
-    pub fn new() -> Self {
-        let title_c_string = CString::new("Application").expect("Failed to make title into c string");
-        let window = unsafe { SDL_CreateWindow(
-            title_c_string.as_ptr(), 
-            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-            1200, 900, 
-            0)
-        };
-        let renderer = unsafe { 
-            SDL_CreateRenderer(
-                window,
-                -1, 0
-            )
-        };
-        let mouse = Mouse::new();
-        let cloth = Cloth::new();
+    pub fn setup(cloth_width: i32, cloth_height: i32, cloth_spacing: i32) -> Self {
+        let mut renderer = Renderer::new();
+        let mut mouse = Mouse::new();
+        let mut cloth = Cloth::new();
+
+        renderer.setup();
+
+        let is_running = true;
+
+        // let width = cloth_width / cloth_spacing;
+        // let height = cloth_height / cloth_spacing;
+
+        // let start_x = renderer.window_width;
+        // let start_y = renderer.window_width;
+
+        // cloth.init(width, height, cloth_spacing, start_x, start_y);
 
         Self {
             renderer,
-            window,
             mouse,
             cloth,
-            is_running: false,
-            last_update_time: 0,
+            is_running,
+            last_update_time: unsafe {SDL_GetTicks()}
         }
-    }
-
-    pub fn setup(&mut self, cloth_width: i32, cloth_height: i32, cloth_spacing: i32)  {
-        self.is_running = true;
-
-        let width = cloth_width / cloth_spacing;
-        let height = cloth_height / cloth_spacing;
-    
-        let (start_x, start_y) = unsafe {
-            let x: *mut c_int;
-            let y: *mut c_int;
-
-            SDL_GetWindowSize(self.window, x, y);
-            
-            (*x, *y)
-        };
-
-        self.cloth.init(width, height, cloth_spacing, start_x, start_y)
     }
     
     pub fn is_running(&self) -> bool {self.is_running}
@@ -66,7 +46,8 @@ impl Application {
         let current_time = unsafe { SDL_GetTicks() };
         let delta_time = (current_time - self.last_update_time) / 1000 as u32;
 
-        self.cloth.update(self.renderer, &self.mouse, delta_time);
+        self.cloth.update(&self.renderer, &self.mouse, delta_time);
+        self.last_update_time = current_time;
     }
     
     pub fn render() {}

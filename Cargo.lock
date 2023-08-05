@@ -56,6 +56,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "14c189c53d098945499cdfa7ecc63567cf3886b3332b312a5b4585d8d3a6a610"
 
 [[package]]
+name = "cc"
+version = "1.0.81"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6c6b2562119bf28c3439f7f02db99faf0aa1a8cdfe5772a2ee155d32227239f0"
+dependencies = [
+ "libc",
+]
+
+[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -67,6 +76,15 @@ version = "0.1.0"
 dependencies = [
  "fermium",
  "macroquad",
+]
+
+[[package]]
+name = "cmake"
+version = "0.1.50"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a31c789563b815f77f4250caee12365734369f942439b7defd71e18a48197130"
+dependencies = [
+ "cc",
 ]
 
 [[package]]
@@ -100,6 +118,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0c600c8c2396ad4229ce7c79dcac0cbe1be5fad1dc61b639573cbddeaed1a661"
 dependencies = [
  "bool32",
+ "cmake",
 ]
 
 [[package]]

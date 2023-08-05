@@ -1,6 +1,6 @@
 use std::{sync::Arc, collections::{HashMap, hash_map::Keys}};
 
-use crate::types::vector2::Vector2;
+use crate::{types::vector2::Vector2, mouse::Mouse};
 
 // A basic particle containing Position, Velocity and Mass
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -8,7 +8,9 @@ pub struct Particle {
     pub position: Vector2,
     pub velocity: Vector2,
     pub mass: f32,
-    pub prev_pos: Vector2
+    pub prev_pos: Vector2,
+    pub is_pinned: bool,
+    pub is_selected: bool
 }
 
 impl Particle {
@@ -17,7 +19,9 @@ impl Particle {
             position: Vector2::UNIT_VECTOR,
             velocity: Vector2::UNIT_VECTOR,
             mass: 1.0,
-            prev_pos: Vector2::UNIT_VECTOR
+            prev_pos: Vector2::UNIT_VECTOR,
+            is_pinned: false,
+            is_selected: false
         }
     }
 
@@ -39,7 +43,14 @@ impl Particle {
         }
     }
 
-    pub fn pin(&self) {}
+    pub fn pin(&self) {
+    }
+
+    pub fn update(&mut self, delta_time: f32, drag: f32, acceleration: Vector2, elasticity: f32, mouse: &Mouse, window_width: i32, window_height: i32) {
+        let mouse_dir = self.position - mouse.pos;
+        let mouse_dist = mouse_dir.get_length();
+        self.
+    }
 
     // Generalized travel op
     pub fn travel_by_op(mut self, delta_time: f32, acceleration: Vector2, op: fn(Particle, f32, Vector2) -> Vector2) {
