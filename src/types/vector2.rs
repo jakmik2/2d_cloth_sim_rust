@@ -72,6 +72,35 @@ impl Mul<Vector2> for f32 {
     }
 }
 
+// Multiply Vector By u32
+impl MulAssign<u32> for Vector2 {
+    fn mul_assign(&mut self, rhs: u32) {
+        self.x = self.x * rhs as f32;
+        self.y = self.y * rhs as f32;
+    }
+}
+
+impl Mul<u32> for Vector2 {
+    type Output = Self;
+    fn mul(self, rhs: u32) -> Self {
+        Self {
+            x: self.x * rhs as f32,
+            y: self.y * rhs as f32
+        }
+    }
+}
+
+impl Mul<Vector2> for u32 {
+    type Output = Vector2;
+
+    fn mul(self, rhs: Vector2) -> Vector2 {
+        Vector2 {
+            x: rhs.x * self as f32,
+            y: rhs.y * self as f32
+        }
+    }
+}
+
 // Multiply Vector2 by Vector2
 impl Mul for Vector2 {
     type Output = Self;

@@ -4,32 +4,18 @@ pub mod mouse;
 pub mod cloth;
 pub mod renderer;
 
-use std::collections::HashMap;
-
-use fermium::{prelude::{SDL_Event, SDL_WaitEvent, SDL_QUIT, SDL_KEYDOWN}, SDL_Quit};
+use fermium::SDL_Quit;
 // use macroquad::prelude::*;
-use types::{particle::*, vector2::Vector2, stick::Stick};
 use application::*;
 
 fn main() {
-    let mut app = Application::setup(10, 10, 1);
-    unsafe {
-        let mut event = SDL_Event::default();
-        loop {
-            assert_eq!(SDL_WaitEvent(&mut event), 1);
-            match event.type_ {
-                SDL_QUIT => {
-                    println!("SDL_QUIT");
-                    break;
-                }
-                SDL_KEYDOWN => {
-                    println!("SDL_KEYDOWN: {:?}", event.key);
-                }
-                _ => ()
-            };
-        }
-        SDL_Quit();
+    let mut app = Application::setup(1200,320, 20);
+    while app.is_running() {
+        app.input();
+        app.update();
+        app.render();
     }
+    unsafe { SDL_Quit() };
 }
 
 // #[macroquad::main("2d Cloth Simulation")]

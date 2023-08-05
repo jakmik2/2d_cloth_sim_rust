@@ -1,5 +1,7 @@
 use fermium::prelude::*;
 
+use crate::types::vector2::Vector2;
+
 #[derive(Debug)]
 pub struct Renderer {
     pub window_height: i32,
@@ -57,6 +59,32 @@ impl Renderer {
             assert!(!renderer.is_null());
 
             self.renderer = renderer;
+        }
+    }
+
+    pub fn clear_screen(&self, color: SDL_Color) {
+        unsafe {
+            SDL_SetRenderDrawColor(self.renderer, color.r, color.g, color.b, color.a);
+            SDL_RenderClear(self.renderer);
+        }
+    }
+
+    pub fn draw_line(&self, p1_pos: Vector2, p2_pos: Vector2, color: SDL_Color) {
+        unsafe { 
+            SDL_SetRenderDrawColor(self.renderer, color.r, color.g, color.b, color.a);
+            SDL_RenderDrawLine(
+                self.renderer, 
+                p1_pos.x as i32, 
+                p1_pos.y as i32, 
+                p2_pos.x  as i32, 
+                p2_pos.y as i32
+            );
+        };
+    }
+
+    pub fn render(&self) {
+        unsafe {
+            SDL_RenderPresent(self.renderer);
         }
     }
 }

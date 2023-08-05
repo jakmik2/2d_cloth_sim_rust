@@ -1,5 +1,3 @@
-use fermium::prelude::*;
-
 use crate::{mouse::Mouse, types::{vector2::Vector2, particle::*, stick::Stick}, renderer::Renderer};
 
 #[derive(Debug)]
@@ -9,6 +7,8 @@ pub struct Cloth {
     elasticity: f32,
     points: ParticleCollection,
     sticks: Vec<Stick>,
+    width: i32,
+    height: i32
 }
 
 impl Cloth {
@@ -18,51 +18,68 @@ impl Cloth {
             drag: 0.01,
             elasticity: 10.,
             points: ParticleCollection::new_empty(),
-            sticks: Vec::new()
+            sticks: Vec::new(),
+            width: 0,
+            height: 0
         }
     }
 
     pub fn init(&mut self, width: i32, height: i32, spacing: i32, start_x: i32, start_y: i32) {   
+        self.width = width;
+        self.height = height;
+        
         for y in 0..height {
             for x in 0..width {
                 let point = Particle::at_position(Vector2 {x: (start_x + x * spacing) as f32, y: (start_y + y * spacing) as f32});
 
                 if x != 0 {
-                    let left_point = self.points.get_particle((self.points.size() - 1).to_string().as_str());
+                    let point_idx = format!("{},{}", x - 1, y);
+                    let left_point = self.points.get_particle(point_idx.as_str());
                     let stick = Stick::new(
-                        self.points.size().to_string().as_str(), 
-                        (self.points.size() - 1).to_string().as_str(),
+                        format!("{},{}", x, y).as_str(),
+                        format!("{},{}", x - 1, y).as_str(),
                         point.position.get_distance_to(left_point.position)
                     );
                     self.sticks.push(stick);
                 }
 
                 if y != 0 {
-                    let up_point = self.points.get_particle((x + (y - 1) * (width + 1)).to_string().as_str());
+                    let point_idx = format!("{},{}", x, y - 1);
+                    let up_point = self.points.get_particle(point_idx.as_str());
                     let stick = Stick::new(
-                        self.points.size().to_string().as_str(),
-                        (x + (y - 1) * (width + 1)).to_string().as_str(),
+                        format!("{},{}", x, y).as_str(),
+                        format!("{},{}", x, y - 1).as_str(),
                         point.position.get_distance_to(up_point.position)
                     );
                     self.sticks.push(stick);
                 }
 
-                if y ==0 && x % 2 == 0 {
+                if y == 0 && x % 2 == 0 {
                     point.pin();
                 }
 
-                self.points.set_particle(self.points.size().to_string().as_str(), point);
+                self.points.set_particle(format!("{},{}", x, y).as_str(), point);
+                // println!("{:?}", point);
             }
         }
     }
         
     pub fn update(&mut self, renderer: &Renderer, mouse: &Mouse, delta_time: u32) {
-        for idx in 0..self.points.size() {
-            self.points.get_particle(idx.to_string().as_str()).update()
+        for y in 0..self.height {
+            for x in 0..self.width {
+                self.points.get_particle(format!("{},{}", x, y).as_str())
+                    .update(delta_time, self.drag, self.gravity, self.elasticity, mouse, renderer.window_width, renderer.window_height);
+            }   
+        }
+
+        for idx in 0..self.sticks.len() {
+            self.sticks[idx].update(&mut self.points);
         }
     }
 
-    pub fn draw(&mut self, renderer: &Renderer, mouse: &Mouse, delta_time: u32) {
-        // TODO
+    pub fn draw(&self, renderer: &Renderer) {
+        for stick in &self.sticks {
+            stick.draw(renderer, &self.points);
+        }
     }
 }
