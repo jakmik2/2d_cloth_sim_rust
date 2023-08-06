@@ -1,5 +1,7 @@
 use std::{sync::Arc, collections::{HashMap, hash_map::Keys}};
 
+use fermium::prelude::SDL_Color;
+
 use crate::{types::vector2::Vector2, mouse::Mouse, renderer::Renderer};
 
 // A basic particle containing Position, Velocity and Mass
@@ -51,12 +53,13 @@ impl Particle {
         }
     }
 
-    pub fn pin(&self) {
+    pub fn pin(&mut self) {
+        self.is_pinned = true;
     }
 
-    pub fn draw(&self, renderer: &Renderer) {
-        // TODO 
-    }
+    // pub fn draw(&self, renderer: &Renderer) {
+    //     renderer.draw_point(self.position, SDL_Color {r: , g: todo!(), b: todo!(), a: todo!() });
+    // }
 
     pub fn update(&mut self, delta_time: u32, drag: f32, acceleration: Vector2, elasticity: f32, mouse: &Mouse, window_width: i32, window_height: i32) {
         let mouse_dir = self.position - mouse.pos;
@@ -81,13 +84,15 @@ impl Particle {
 
         if self.is_pinned {
             self.position = self.init_pos;
+            return;
         }
 
         let new_position = self.position + (self.position - self.prev_pos) * (-1. - drag) + acceleration * (1. - drag) * delta_time * delta_time;
+
         self.prev_pos = self.position;
         self.position = new_position;
 
-        self.keep_inside_window(window_height, window_width);        
+        self.keep_inside_window(window_height, window_width);
     }
 
     fn keep_inside_window(&mut self, window_height: i32, window_width: i32) {
@@ -120,8 +125,6 @@ impl Particle {
             x: 2. * particle.position.x - particle.prev_pos.x + acceleration.x * (delta_time * delta_time),
             y: 2. * particle.position.y - particle.prev_pos.y + acceleration.y * (delta_time * delta_time),
         };
-
-        println!("{:?}", position);
 
         position
     }

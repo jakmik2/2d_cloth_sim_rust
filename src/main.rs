@@ -5,11 +5,12 @@ pub mod cloth;
 pub mod renderer;
 
 use fermium::SDL_Quit;
-// use macroquad::prelude::*;
+
 use application::*;
 
 fn main() {
-    let mut app = Application::setup(1200,320, 20);
+    let mut app = Application::setup(1600,640, 60);
+    
     while app.is_running() {
         app.input();
         app.update();

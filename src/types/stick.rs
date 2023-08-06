@@ -1,8 +1,8 @@
-use fermium::prelude::{SDL_Color, SDLK_SELECT};
+use fermium::{prelude::{SDL_Color, SDLK_SELECT}, SDL_Quit};
 
 use crate::renderer::Renderer;
 
-use super::particle::ParticleCollection;
+use super::{particle::ParticleCollection, vector2::Vector2};
 
 #[derive(Debug, PartialEq)]
 pub struct Stick {
@@ -28,12 +28,14 @@ impl Stick {
     }
 
     pub fn update(&mut self, points: &mut ParticleCollection) {
+        let mut p1 = points.get_particle(self.p1.as_str());
+        let mut p2 = points.get_particle(self.p2.as_str());
+
+        self.is_selected = p1.is_selected || p2.is_selected;
+
         if !self.is_active {
             return;
         }
-
-        let mut p1 = points.get_particle(self.p1.as_str());
-        let mut p2 = points.get_particle(self.p2.as_str());
 
         let p1_pos = p1.position;
         let p2_pos = p2.position;

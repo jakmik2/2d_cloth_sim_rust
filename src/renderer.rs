@@ -82,6 +82,13 @@ impl Renderer {
         };
     }
 
+    pub fn draw_point(&self, pos: Vector2, color: SDL_Color) {
+        unsafe {
+            SDL_SetRenderDrawColor(self.renderer, color.r, color.g, color.b, color.a);
+            SDL_RenderDrawPoint(self.renderer, pos.x as i32, pos.y as i32) 
+        };
+    }
+
     pub fn render(&self) {
         unsafe {
             SDL_RenderPresent(self.renderer);

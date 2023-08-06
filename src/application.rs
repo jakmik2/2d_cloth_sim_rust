@@ -77,6 +77,19 @@ impl Application {
                             self.mouse.right_button_down = true;
                         }
                     }
+                    SDL_MOUSEBUTTONUP => {
+                        let (mut x, mut y) = (0, 0);
+                        SDL_GetMouseState(&mut x as *mut i32, &mut y as *mut i32);
+                        self.mouse.update_position(x, y);
+
+                        if self.mouse.left_button_down && event.button.button == SDL_BUTTON_LEFT as u8 {
+                            self.mouse.left_button_down = false;
+                        }
+
+                        if self.mouse.right_button_down && event.button.button == SDL_BUTTON_RIGHT as u8 {
+                            self.mouse.right_button_down = false;
+                        }
+                    }
                     SDL_MOUSEWHEEL => {
                         if event.wheel.y > 0 {
                             self.mouse.increase_cursor_size(10.);

@@ -16,7 +16,7 @@ impl Cloth {
         Self {
             gravity: Vector2 {x: 0., y: 981.},
             drag: 0.01,
-            elasticity: 10.,
+            elasticity: 10000.,
             points: ParticleCollection::new_empty(),
             sticks: Vec::new(),
             width: 0,
@@ -30,7 +30,7 @@ impl Cloth {
         
         for y in 0..height {
             for x in 0..width {
-                let point = Particle::at_position(Vector2 {x: (start_x + x * spacing) as f32, y: (start_y + y * spacing) as f32});
+                let mut point = Particle::at_position(Vector2 {x: (start_x + x * spacing) as f32, y: (start_y + y * spacing) as f32});
 
                 if x != 0 {
                     let point_idx = format!("{},{}", x - 1, y);
@@ -54,12 +54,11 @@ impl Cloth {
                     self.sticks.push(stick);
                 }
 
-                if y == 0 && x % 2 == 0 {
+                if y == 0 && x == 0 {
                     point.pin();
                 }
 
                 self.points.set_particle(format!("{},{}", x, y).as_str(), point);
-                // println!("{:?}", point);
             }
         }
     }
@@ -67,9 +66,13 @@ impl Cloth {
     pub fn update(&mut self, renderer: &Renderer, mouse: &Mouse, delta_time: u32) {
         for y in 0..self.height {
             for x in 0..self.width {
-                self.points.get_particle(format!("{},{}", x, y).as_str())
-                    .update(delta_time, self.drag, self.gravity, self.elasticity, mouse, renderer.window_width, renderer.window_height);
-            }   
+                let key = format!("{},{}", x, y);
+
+                let mut point = self.points.get_particle(key.as_str());
+                point.update(delta_time, self.drag, self.gravity, self.elasticity, mouse, renderer.window_width, renderer.window_height);
+                
+                self.points.set_particle(key.as_str(), point);
+            }
         }
 
         for idx in 0..self.sticks.len() {
@@ -78,8 +81,8 @@ impl Cloth {
     }
 
     pub fn draw(&self, renderer: &Renderer) {
-        for stick in &self.sticks {
-            stick.draw(renderer, &self.points);
+        for idx in 0..self.sticks.len() {
+            self.sticks[idx].draw(renderer, &self.points);
         }
     }
 }
