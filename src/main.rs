@@ -9,7 +9,7 @@ use fermium::SDL_Quit;
 use application::*;
 
 fn main() {
-    let mut app = Application::setup(1600,640, 60);
+    let mut app = Application::setup(1200, 320, 10);
     
     while app.is_running() {
         app.input();

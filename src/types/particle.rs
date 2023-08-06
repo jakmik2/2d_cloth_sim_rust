@@ -87,12 +87,12 @@ impl Particle {
             return;
         }
 
-        let new_position = self.position + (self.position - self.prev_pos) * (-1. - drag) + acceleration * (1. - drag) * delta_time * delta_time;
+        let new_position = self.position + (self.position - self.prev_pos) * (1. - drag) + acceleration * (1. - drag) * delta_time * delta_time;
 
         self.prev_pos = self.position;
         self.position = new_position;
 
-        self.keep_inside_window(window_height, window_width);
+        // self.keep_inside_window(window_height, window_width);
     }
 
     fn keep_inside_window(&mut self, window_height: i32, window_width: i32) {

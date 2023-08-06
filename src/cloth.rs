@@ -14,9 +14,9 @@ pub struct Cloth {
 impl Cloth {
     pub fn new() -> Self {        
         Self {
-            gravity: Vector2 {x: 0., y: 981.},
+            gravity: Vector2 {x: 0., y: 98100.},
             drag: 0.01,
-            elasticity: 10000.,
+            elasticity: 10.,
             points: ParticleCollection::new_empty(),
             sticks: Vec::new(),
             width: 0,
@@ -54,7 +54,7 @@ impl Cloth {
                     self.sticks.push(stick);
                 }
 
-                if y == 0 && x == 0 {
+                if y == 0 && x < self.width {
                     point.pin();
                 }
 
