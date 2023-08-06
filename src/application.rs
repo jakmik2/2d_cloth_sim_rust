@@ -2,74 +2,126 @@ use std::ffi::CString;
 
 use fermium::{prelude::*, video::SDL_GetWindowSize};
 
-use crate::{mouse::Mouse, cloth::Cloth};
+use crate::{mouse::Mouse, cloth::Cloth, renderer::Renderer, types::frame_rate_counter::FrameRateCounter};
 
 #[derive(Debug)]
-struct Application {
-    renderer: *mut SDL_Renderer,
-    window: *mut SDL_Window,
+pub struct Application {
+    renderer: Renderer,
     mouse: Mouse,
     cloth: Cloth,
     is_running: bool,
     last_update_time: u32,
+    fps: FrameRateCounter
 }
 
 impl Application {
-    pub fn new() -> Self {
-        let title_c_string = CString::new("Application").expect("Failed to make title into c string");
-        let window = unsafe { SDL_CreateWindow(
-            title_c_string.as_ptr(), 
-            SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 
-            1200, 900, 
-            0)
-        };
-        let renderer = unsafe { 
-            SDL_CreateRenderer(
-                window,
-                -1, 0
-            )
-        };
+    pub fn setup(cloth_width: i32, cloth_height: i32, cloth_spacing: i32) -> Self {
+        let mut renderer = Renderer::new();
         let mouse = Mouse::new();
-        let cloth = Cloth::new();
+        let mut cloth = Cloth::new();
 
-        Self {
-            renderer,
-            window,
-            mouse,
-            cloth,
-            is_running: false,
-            last_update_time: 0,
-        }
-    }
+        renderer.setup();
 
-    pub fn setup(&mut self, cloth_width: i32, cloth_height: i32, cloth_spacing: i32)  {
-        self.is_running = true;
+        let is_running = true;
 
         let width = cloth_width / cloth_spacing;
         let height = cloth_height / cloth_spacing;
-    
-        let (start_x, start_y) = unsafe {
-            let x: *mut c_int;
-            let y: *mut c_int;
 
-            SDL_GetWindowSize(self.window, x, y);
-            
-            (*x, *y)
-        };
+        let start_x = renderer.window_width / 2 - width * cloth_spacing / 2;
+        let start_y = renderer.window_width / 10;
 
-        self.cloth.init(width, height, cloth_spacing, start_x, start_y)
+        cloth.init(width, height, cloth_spacing, start_x, start_y);
+
+        Self {
+            renderer,
+            mouse,
+            cloth,
+            is_running,
+            last_update_time: unsafe {SDL_GetTicks()},
+            fps: FrameRateCounter::new(10)
+        }
     }
     
     pub fn is_running(&self) -> bool {self.is_running}
     
+    pub fn input(&mut self) {
+        self.fps.start();
+        unsafe {
+            let mut event = SDL_Event::default();
+
+            while SDL_PollEvent(&mut event as *mut SDL_Event) != 0 {
+                match event.type_ {
+                    SDL_QUIT => {
+                        println!("SDL_QUIT");
+                        self.is_running = false;
+                        break;
+                    }
+                    SDL_KEYDOWN => {
+                        if event.key.keysym.sym == SDLK_ESCAPE {
+                            self.is_running = false;
+                        }
+                    }
+                    SDL_MOUSEMOTION => {
+                        self.mouse.update_position(
+                            event.motion.x,
+                            event.motion.y 
+                        );
+                    }
+                    SDL_MOUSEBUTTONDOWN => {
+                        let (mut x, mut y): (i32, i32) = (0,0);
+                        SDL_GetMouseState(&mut x as *mut i32, &mut y as *mut i32);
+                        self.mouse.update_position(x, y);
+
+                        if !self.mouse.left_button_down && event.button.button == SDL_BUTTON_LEFT as u8 {
+                            self.mouse.left_button_down = true;
+                        }
+
+                        if !self.mouse.right_button_down && event.button.button == SDL_BUTTON_RIGHT as u8 {
+                            self.mouse.right_button_down = true;
+                        }
+                    }
+                    SDL_MOUSEBUTTONUP => {
+                        let (mut x, mut y) = (0, 0);
+                        SDL_GetMouseState(&mut x as *mut i32, &mut y as *mut i32);
+                        self.mouse.update_position(x, y);
+
+                        if self.mouse.left_button_down && event.button.button == SDL_BUTTON_LEFT as u8 {
+                            self.mouse.left_button_down = false;
+                        }
+
+                        if self.mouse.right_button_down && event.button.button == SDL_BUTTON_RIGHT as u8 {
+                            self.mouse.right_button_down = false;
+                        }
+                    }
+                    SDL_MOUSEWHEEL => {
+                        if event.wheel.y > 0 {
+                            self.mouse.increase_cursor_size(10.);
+                        } else if event.wheel.y < 0 {
+                            self.mouse.increase_cursor_size(-10.);
+                        }
+                    }
+                    _ => ()
+                };
+            }
+        }
+    }
+
     pub fn update(&mut self) {
         let current_time = unsafe { SDL_GetTicks() };
         let delta_time = (current_time - self.last_update_time) / 1000 as u32;
 
-        self.cloth.update(self.renderer, &self.mouse, delta_time);
+        self.cloth.update(&self.renderer, &self.mouse, delta_time);
+        self.last_update_time = current_time;
+    }
+
+    pub fn render(&mut self) {
+        self.renderer.clear_screen(SDL_Color { r: 0, g: 8, b: 22, a: 1 });
+        self.cloth.draw(&self.renderer);
+        self.renderer.render();
+        self.fps.update();
     }
     
-    pub fn render() {}
-    
-    pub fn destroy() {}
+    pub fn destroy(&self) {
+        
+    }
 }
