@@ -25,7 +25,15 @@ impl Mouse {
     }
 
 
-    pub fn increase_cursor_size(&self, increment: f32) {
-        // TODO
+    pub fn increase_cursor_size(&mut self, increment: f32) {
+        if self.cursor_size + increment > self.max_cursor_size || self.cursor_size + increment < self.min_cursor_size {
+            return;
+        }
+        self.cursor_size += increment;
+    }
+
+    pub fn update_position(&mut self, x: i32, y: i32) {
+        self.prev_pos = self.pos.clone();
+        self.pos = Vector2 {x: x as f32, y: y as f32}
     }
 }

@@ -24,6 +24,23 @@
         },
         {
             "type": "lldb",
+            "name": "Launch App",
+            "request": "launch",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--release"
+                ],
+                "filter": {
+                    "name": "cloth_physics_simulation_2d",
+                    "kind": "bin"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
             "request": "launch",
             "name": "Debug unit tests in executable 'cloth_physics_simulation_2d'",
             "cargo": {

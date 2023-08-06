@@ -6,5 +6,4 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-fermium = "22605.0.0"
-macroquad = "0.4.2"
+fermium = {version="22605.0.0", features=["static_bundled_build"]}
