@@ -14,7 +14,7 @@ pub struct Cloth {
 impl Cloth {
     pub fn new() -> Self {        
         Self {
-            gravity: Vector2 {x: 0., y: 98100.},
+            gravity: Vector2 {x: 0., y: 981.},
             drag: 0.01,
             elasticity: 10.,
             points: ParticleCollection::new_empty(),
