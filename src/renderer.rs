@@ -46,7 +46,7 @@ impl Renderer {
                 SDL_WINDOWPOS_CENTERED,
                 self.window_width,
                 self.window_height,
-                (SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI).0
+                SDL_WINDOW_OPENGL.0
             );
 
             assert!(!window.is_null());

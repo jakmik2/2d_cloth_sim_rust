@@ -92,7 +92,7 @@ impl Particle {
         self.prev_pos = self.position;
         self.position = new_position;
 
-        // self.keep_inside_window(window_height, window_width);
+        self.keep_inside_window(window_height, window_width);
     }
 
     fn keep_inside_window(&mut self, window_height: i32, window_width: i32) {

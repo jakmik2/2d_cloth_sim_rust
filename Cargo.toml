@@ -7,4 +7,3 @@ edition = "2021"
 
 [dependencies]
 fermium = {version="22605.0.0", features=["static_bundled_build"]}
-macroquad = "0.4.2"

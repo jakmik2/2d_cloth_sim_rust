@@ -9,12 +9,13 @@ use fermium::SDL_Quit;
 use application::*;
 
 fn main() {
-    let mut app = Application::setup(1200, 320, 10);
-    
+    let mut app = Application::setup(600, 350, 10);
+
     while app.is_running() {
         app.input();
         app.update();
         app.render();
     }
+
     unsafe { SDL_Quit() };
 }

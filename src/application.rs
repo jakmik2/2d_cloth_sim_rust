@@ -2,7 +2,7 @@ use std::ffi::CString;
 
 use fermium::{prelude::*, video::SDL_GetWindowSize};
 
-use crate::{mouse::Mouse, cloth::Cloth, renderer::Renderer};
+use crate::{mouse::Mouse, cloth::Cloth, renderer::Renderer, types::frame_rate_counter::FrameRateCounter};
 
 #[derive(Debug)]
 pub struct Application {
@@ -11,6 +11,7 @@ pub struct Application {
     cloth: Cloth,
     is_running: bool,
     last_update_time: u32,
+    fps: FrameRateCounter
 }
 
 impl Application {
@@ -26,7 +27,7 @@ impl Application {
         let width = cloth_width / cloth_spacing;
         let height = cloth_height / cloth_spacing;
 
-        let start_x = renderer.window_width - width * cloth_spacing / 2;
+        let start_x = renderer.window_width / 2 - width * cloth_spacing / 2;
         let start_y = renderer.window_width / 10;
 
         cloth.init(width, height, cloth_spacing, start_x, start_y);
@@ -36,13 +37,15 @@ impl Application {
             mouse,
             cloth,
             is_running,
-            last_update_time: unsafe {SDL_GetTicks()}
+            last_update_time: unsafe {SDL_GetTicks()},
+            fps: FrameRateCounter::new(10)
         }
     }
     
     pub fn is_running(&self) -> bool {self.is_running}
     
     pub fn input(&mut self) {
+        self.fps.start();
         unsafe {
             let mut event = SDL_Event::default();
 
@@ -111,10 +114,11 @@ impl Application {
         self.last_update_time = current_time;
     }
 
-    pub fn render(&self) {
+    pub fn render(&mut self) {
         self.renderer.clear_screen(SDL_Color { r: 0, g: 8, b: 22, a: 1 });
         self.cloth.draw(&self.renderer);
-        self.renderer.render()
+        self.renderer.render();
+        self.fps.update();
     }
     
     pub fn destroy(&self) {
